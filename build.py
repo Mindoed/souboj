@@ -206,7 +206,7 @@ def render_info():
 def render_schedule():
     sc = data.SCHEDULE
     prizes = "".join(f'<p class="text-500 txt-color white">{e(p)}</p>' for p in sc["prizes"])
-    return f"""<section class="section bgr-color dark"><div id="terminy" class="section-anchor"></div><div class="container"><div class="flex-v max-w-640"><h2 class="display-1 txt-color white">{e(sc['heading'])}</h2><div class="flex-v tight"><h3 class="display-2 txt-color white">herna</h3><p class="text-500 txt-color white">{e(sc['herna'])}</p></div><div class="flex-v tight"><h3 class="display-2 txt-color white">termíny</h3><p class="text-500 txt-color white">{e(sc['dates'])}</p><p class="text-500 txt-color white">{e(sc['start'])}</p></div><div class="flex-v tight"><h3 class="display-2 txt-color white">podrobné info</h3><a href="{e(sc['info_link']['href'])}" target="_blank" class="link-block w-inline-block"><p class="text-500 txt-color white">{e(sc['info_link']['label'])}</p></a></div><div class="flex-v tight"><h3 class="display-2 txt-color white">výsledky</h3><a href="{e(sc['results_link']['href'])}" target="_blank" class="link-block w-inline-block"><p class="text-500 txt-color white">{e(sc['results_link']['label'])}</p></a></div><div class="flex-v tight"><h3 class="display-2 txt-color white">ceny</h3>{prizes}</div></div></div></section>"""
+    return f"""<section class="section bgr-color dark"><div id="terminy" class="section-anchor"></div><div class="container"><div class="flex-v max-w-640"><h2 class="display-1 txt-color white">{e(sc['heading'])}</h2><div class="flex-v tight"><h3 class="display-2 txt-color white">herna</h3><p class="text-500 txt-color white">{e(sc['herna'])}</p></div><div class="flex-v tight"><h3 class="display-2 txt-color white">termíny</h3><p class="text-500 txt-color white">{e(sc['dates'])}</p><p class="text-500 txt-color white">{e(sc['start'])}</p></div><div class="flex-v tight"><h3 class="display-2 txt-color white">startovné</h3><p class="text-500 txt-color white">{e(sc['entry'])}</p><p class="text-500 txt-color white">{e(sc['entry_note'])}</p></div><div class="flex-v tight"><h3 class="display-2 txt-color white">podrobné info</h3><a href="{e(sc['info_link']['href'])}" target="_blank" class="link-block w-inline-block"><p class="text-500 txt-color white">{e(sc['info_link']['label'])}</p></a></div><div class="flex-v tight"><h3 class="display-2 txt-color white">výsledky</h3><a href="{e(sc['results_link']['href'])}" target="_blank" class="link-block w-inline-block"><p class="text-500 txt-color white">{e(sc['results_link']['label'])}</p></a></div><div class="flex-v tight"><h3 class="display-2 txt-color white">ceny</h3>{prizes}</div></div></div></section>"""
 
 
 def mobile_rows(round_):
@@ -258,7 +258,7 @@ def render_mobile_block(round_):
     )
 
 
-def render_season_pane(season, index):
+def render_season_pane(season, index, active_index):
     # Každé kolo se vykreslí do obou školních sloupců (vlevo vut, vpravo MUNI)
     # a jako sloučená mobilní listina. Kola bez výsledků mají jen nadpis-odkaz.
     grid_blocks = [
@@ -270,22 +270,29 @@ def render_season_pane(season, index):
         grid_blocks.append(render_round_block(round_, "muni"))
         grid_blocks.append(render_mobile_block(round_))
     grid = "".join(grid_blocks)
-    active = " w--tab-active" if index == 0 else ""
+    active = " w--tab-active" if index == active_index else ""
     return f"""<div id="tab-{index}" role="tabpanel" class="w-tab-pane{active}"><div class="flex-v"><div class="subheader-wrapper"><h3 class="display-2 txt-color dark">skóre univerzit (AVG)</h3></div><div class="grid-2">{grid}</div></div><div class="flex-v"><div class="subheader-wrapper"><h3 class="display-2 txt-color dark">MVP série</h3></div><div class="flex-v supertight"><p class="text-500">{e(season['mvp'])}</p></div></div></div>"""
 
 
 def render_results():
+    # Defaultně otevřený tab — sezóna s "active": True (jinak první v pořadí).
+    active_index = next(
+        (i for i, season in enumerate(data.SEASONS) if season.get("active")), 0
+    )
     links = "".join(
         '<a href="#tab-{i}" data-tab="{i}" role="tab" aria-selected="{sel}" class="tab-link-tab-{n} w-inline-block w-tab-link{cur}"><div>{label}</div></a>'.format(
             i=i,
             n=i + 1,
-            sel="true" if i == 0 else "false",
-            cur=" w--current" if i == 0 else "",
+            sel="true" if i == active_index else "false",
+            cur=" w--current" if i == active_index else "",
             label=e(season["label"]),
         )
         for i, season in enumerate(data.SEASONS)
     )
-    panes = "".join(render_season_pane(season, i) for i, season in enumerate(data.SEASONS))
+    panes = "".join(
+        render_season_pane(season, i, active_index)
+        for i, season in enumerate(data.SEASONS)
+    )
     return f"""<section class="section"><div id="skore" class="section-anchor"></div><div class="container"><div class="flex-v max-w-640"><h2 class="display-1">výsledky</h2><div data-tabs class="tabs w-tabs"><div class="tabs-menu w-tab-menu" role="tablist">{links}</div><div class="tabs-content w-tab-content">{panes}</div></div></div></div></section>"""
 
 

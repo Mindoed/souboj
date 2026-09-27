@@ -106,6 +106,8 @@ SCHEDULE = {
     "herna": "Sborovna, Botanická 1, Brno",
     "dates": "4/10 • 25/10 • 15/11 • 6/12",
     "start": "start od 17.30",
+    "entry": "200 Kč",
+    "entry_note": "peněžité ceny pro nejlepší hráče*ky",
     "info_link": {"label": "podzim 2026", "href": "https://vysledky.cmbs.cz/tournament-series/825"},
     "results_link": {"label": "jaro 2026", "href": "https://vysledky.cmbs.cz/tournament-series/812"},
     "prizes": [
@@ -211,6 +213,8 @@ SEASONS = [
         "rounds": JARO_ROUNDS,
     },
     {
+        # Aktivní (defaultně otevřený) tab — aktuálně probíhající sezóna.
+        "active": True,
         "label": "Podzim 2026",
         "scores": {"muni": "0", "vut": "0"},
         "mvp": "tbd",
@@ -301,6 +305,8 @@ JSONLD = {
     ],
     "offers": {
         "@type": "Offer",
+        "price": "200",
+        "priceCurrency": "CZK",
         "description": (
             "Putovní pohár pro vítěznou univerzitu, štítek na trofeji pro MVP "
             "série a vítěze jednotlivých turnajů, roční členství v DELTA Billiard "
